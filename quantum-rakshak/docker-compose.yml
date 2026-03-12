@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  issuer:
+    build:
+      context: ./issuer
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+    volumes:
+      - ./common:/app/common
+    networks:
+      - rakshak-net
+    depends_on:
+      - holder
+
+  holder:
+    build:
+      context: ./holder
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env
+    volumes:
+      - ./common:/app/common
+      - holder-storage:/app/storage
+    networks:
+      - rakshak-net
+
+  verifier:
+    build:
+      context: ./verifier
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    env_file:
+      - .env
+    volumes:
+      - ./common:/app/common
+    networks:
+      - rakshak-net
+
+volumes:
+  holder-storage:
+
+networks:
+  rakshak-net:
+    driver: bridge
